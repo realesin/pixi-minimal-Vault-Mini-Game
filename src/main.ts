@@ -1,6 +1,6 @@
-import SceneManager from "./core/SceneManager";
+import PixiApp from "./core/App";
+const pixiApp = new PixiApp();
+await pixiApp.begin();
 
-const sceneManager = new SceneManager();
-
-await sceneManager.switchScene("Loading");
-await sceneManager.switchScene("Game");
+// @ts-expect-error Set PIXI app to global wndow object for the PIXI Inspector
+window.__PIXI_APP__ = pixiApp;

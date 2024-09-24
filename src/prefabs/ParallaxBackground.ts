@@ -1,4 +1,4 @@
-import { Container, TilingSprite, Ticker, Texture } from "pixi.js";
+import { Container, TilingSprite, Texture } from "pixi.js";
 import { centerObjects } from "../utils/misc";
 
 export type BgConfig = {
@@ -45,17 +45,6 @@ export default class ParallaxBackground extends Container {
 
       this.addChild(tilingSprite);
     }
-  }
-
-  initPlayerMovement(object: {
-    state: { velocity: { x: number; y: number } };
-  }) {
-    Ticker.shared.add((delta) => {
-      const x = object.state.velocity.x * delta;
-      const y = object.state.velocity.y * delta;
-
-      this.updatePosition(x, y);
-    });
   }
 
   updatePosition(x: number, y: number) {

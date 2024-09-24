@@ -1,51 +1,61 @@
 import config from "../config";
 import ParallaxBackground from "../prefabs/ParallaxBackground";
 import { Player } from "../prefabs/Player";
-import Scene from "../core/Scene";
-import SpineAnimation from "../core/SpineAnimation";
+import { Container, Text, Graphics } from "pixi.js";
+import { centerObjects } from "../utils/misc";
+import { SceneUtils } from "../core/App";
 
-export default class Game extends Scene {
+export default class Game extends Container {
   name = "Game";
 
   private player!: Player;
   private background!: ParallaxBackground;
 
-  load() {
+  constructor(protected utils: SceneUtils) {
+    super();
+  }
+
+  async load() {
+
+    const bg = new Graphics().beginFill(0x0b1354).drawRect(0, 0, window.innerWidth, window.innerHeight)
+
+    const text = new Text("Loading...", {
+      fontFamily: "Verdana",
+      fontSize: 50,
+      fill: "white",
+    });
+
+    text.resolution = 2;
+
+    centerObjects(text);
+
+    this.addChild(bg, text);
+
+    await this.utils.assetLoader.loadAssets();
+  }
+
+  async start() {
+    this.removeChildren();
+
     this.background = new ParallaxBackground(config.backgrounds.forest);
     this.player = new Player();
 
     this.player.x = window.innerWidth / 2;
     this.player.y = window.innerHeight - this.player.height / 3;
 
-    this.background.initPlayerMovement(this.player);
-
     this.addChild(this.background, this.player);
   }
 
-  async start() {
-    // Example of how to play a spine animation
-    const vine = new SpineAnimation("vine-pro");
-
-    vine.stateData.setMix("grow", "grow", 0.5);
-
-    vine.x = 0;
-    vine.y = window.innerHeight / 2 - 50;
-
-    this.background.addChild(vine);
-
-    while (vine) {
-      await vine.play("grow");
-    }
+  update(delta: number) {
+    const x = this.player.state.velocity.x * delta;
+    const y = this.player.state.velocity.y * delta;
+    this.background.updatePosition(x, y);
   }
 
   onResize(width: number, height: number) {
-    if (this.player) {
-      this.player.x = width / 2;
-      this.player.y = height - this.player.height / 3;
-    }
+    this.player.x = width / 2;
+    this.player.y = height - this.player.height / 3;
 
-    if (this.background) {
-      this.background.resize(width, height);
-    }
+    this.background.resize(width, height);
   }
 }

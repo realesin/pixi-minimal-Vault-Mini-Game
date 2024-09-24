@@ -1,13 +1,11 @@
 import { Assets } from "pixi.js";
 import { Debug } from "../utils/debug";
-import "pixi-spine";
 
 type Asset = {
   name: string;
   url: string;
   ext: string;
   category: string;
-  group: string;
 };
 
 export default class AssetLoader {
@@ -25,16 +23,14 @@ export default class AssetLoader {
     return Object.keys(assetFiles);
   }
 
-  async loadAssetsGroup(group: string) {
-    const sceneAssets = this.manifest.filter((asset) => asset.group === group);
-
-    for (const asset of sceneAssets) {
+  async loadAssets() {
+    for (const asset of this.manifest) {
       Assets.add(asset.name, asset.url);
     }
 
-    const resources = await Assets.load(sceneAssets.map((asset) => asset.name));
+    const resources = await Assets.load(this.manifest.map((asset) => asset.name));
 
-    Debug.log("✅ Loaded assets group", group, resources);
+    Debug.log("✅ Loaded assets", resources);
 
     return resources;
   }
@@ -42,7 +38,7 @@ export default class AssetLoader {
   generateManifest() {
     const assetsManifest: Asset[] = [];
     const assetPathRegexp =
-      /public\/(?<group>[\w.-]+)\/(?<category>[\w.-]+)\/(?<name>[\w.-]+)\.(?<ext>\w+)$/;
+      /public\/(?<category>[\w.-]+)\/(?<name>[\w.-]+)\.(?<ext>\w+)$/;
 
     this.assetFileUrls.forEach((assetPath) => {
       const match = assetPathRegexp.exec(assetPath);
@@ -53,19 +49,14 @@ export default class AssetLoader {
         );
       }
 
-      const { group, category, name, ext } = match.groups;
+      const { category, name, ext } = match.groups;
 
-      // Skip image files in the spine or spritesheets category
+      // Skip image files in the spritesheets category
       if (category === "spritesheets" && ext !== "json") {
         return;
       }
 
-      if (category === "spine" && ext !== "json" && ext !== "skel") {
-        return;
-      }
-
       assetsManifest.push({
-        group,
         category,
         name,
         ext,
