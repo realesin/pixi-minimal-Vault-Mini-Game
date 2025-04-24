@@ -1,3 +1,7 @@
+So game based on this...
+Well theres supposed to be drag but I didnt test it
+You can use right and left arrow or the scroll on your mouse
+Check the screenshots
 ### 👉 fork of Hafaux's neat <a href=" https://github.com/Hafaux/pixi-framework" target="_blank">PIXI Framework</a> (feats scene management and Spine animations)
 
 ## 🎮 Simple 2D Game Framework for [PixiJS](https://pixijs.com) using [Vite⚡](https://vitejs.dev/)
